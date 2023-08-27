@@ -18,17 +18,18 @@ mysql> describe emp_details;
 
 insert into emp_details(emp_id,full_name,manager_id,joined_date,city)values(105,"jude",5,STR_TO_DATE('15-JUL-2013', '%d-%M-%Y'),"hyderabad");
 
- select * from emp_details;
-+--------+-----------+------------+-------------+------------+
-| emp_id | full_name | manager_id | joined_date | city       |
-+--------+-----------+------------+-------------+------------+
-|    101 | johnathan |          1 | 2005-05-24  | chennai    |
-|    102 | stokes    |          2 | 2020-07-15  | banglore   |
-|    103 | alphonso  |          3 | 2011-11-11  | kolkata    |
-|    104 | camavinga |          4 | 2011-03-10  | mumbai     |
-|    105 | jude      |          5 | 2020-07-15  | hyderabad  |
-|    106 | jobe      |          6 | 2013-06-05  | coimbatore |
-+--------+-----------+------------+-------------+------------+
+ select * from emp_details; 
++--------+-----------+-------------+------------+------------+
+| emp_id | full_name | joined_date | city       | manager_id |
++--------+-----------+-------------+------------+------------+
+|    101 | johnathan | 2005-05-24  | chennai    |        101 |
+|    102 | stokes    | 2020-07-15  | banglore   |        102 |
+|    103 | alphonso  | 2011-11-11  | kolkata    |       NULL |
+|    104 | camavinga | 2011-03-10  | mumbai     |        104 |
+|    105 | jude      | 2020-07-15  | hyderabad  |       NULL |
+|    106 | jobe      | 2013-06-05  | coimbatore |        106 |
+|    107 | jude      | 2013-07-15  | hyderabad  |          5 |
++--------+-----------+-------------+------------+------------+
 
  EmployeeSalary:
 
@@ -91,7 +92,7 @@ select * from emp_salary;
 |    105 | jude      |          5 | 2020-07-15  | hyderabad |
 +--------+-----------+------------+-------------+-----------+
 
-Fetch all employees from EmployeeDetails who have a salary record in EmployeeSalary:
+4)Fetch all employees from EmployeeDetails who have a salary record in EmployeeSalary:
 
 select d.emp_id,d.full_name,s.salary from emp_details d join emp_salary s on d.emp_id = s.emp_id;
 +--------+-----------+--------+
@@ -104,7 +105,7 @@ select d.emp_id,d.full_name,s.salary from emp_details d join emp_salary s on d.e
 +--------+-----------+--------+
 
 
-Write an SQL query to fetch a project-wise count of employees.
+5)Write an SQL query to fetch a project-wise count of employees.
 
  select project_name,count(emp_id) as project_count from emp_salary group by project_name;
 +--------------+---------------+
@@ -116,7 +117,7 @@ Write an SQL query to fetch a project-wise count of employees.
 +--------------+---------------+
 3 rows in set (0.00 sec)
 
-Fetch employee names and salaries even if the salary value is not present for the employee.
+6)Fetch employee names and salaries even if the salary value is not present for the employee.
 
 select d.full_name ,s.salary from emp_details d left join emp_salary s on d.emp_id = s.emp_id;
 +-----------+--------+
@@ -131,7 +132,7 @@ select d.full_name ,s.salary from emp_details d left join emp_salary s on d.emp_
 +-----------+--------+
 6 rows in set (0.00 sec)
 
-Write an SQL query to fetch all the Employees who are also managers.
+7)Write an SQL query to fetch all the Employees who are also managers.
 
  select d.full_name  from emp_details d join emp_details m on d.emp_id = m.manager_id;
 +-----------+
@@ -144,7 +145,7 @@ Write an SQL query to fetch all the Employees who are also managers.
 +-----------+
 4 rows in set (0.00 sec)
 
-Write an SQL query to fetch duplicate records from EmployeeDetails.
+8)Write an SQL query to fetch duplicate records from EmployeeDetails.
 
  select full_name ,count(*) from emp_details group by full_name having count(*)>1;
 +-----------+----------+
@@ -154,7 +155,7 @@ Write an SQL query to fetch duplicate records from EmployeeDetails.
 +-----------+----------+
 1 row in set (0.00 sec)
 
-Write an SQL query to fetch only odd rows from the table.
+9)Write an SQL query to fetch only odd rows from the table.
 
 select * from emp_details where mod (emp_id,2)<>0;
 +--------+-----------+-------------+-----------+------------+
@@ -166,7 +167,7 @@ select * from emp_details where mod (emp_id,2)<>0;
 |    107 | jude      | 2013-07-15  | hyderabad |          5 |
 +--------+-----------+-------------+-----------+------------+
 
-Write a query to find the 3rd highest salary from a table without top or limit keyword.
+10)Write a query to find the 3rd highest salary from a table without top or limit keyword.
 
  select emp_id,salary from emp_salary where salary=(select max(salary) from emp_salary where salary<(select max(salary) from emp_salary where salary <(select max(salary) from emp_salary)))limit 1;
 +--------+--------+
