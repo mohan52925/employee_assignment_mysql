@@ -1,0 +1,177 @@
+Columns for EmployeeDetails: EmpId FullName ManagerId DateOfJoining City && Columns for EmployeeSalary: : EmpId Project Salary Variable.
+
+Employee Details:
+
+create table emp_details(emp_id int,full_name varchar(20),manager_id int,joined_date int,city varchar(10));
+ alter table emp_details add constraint primary key(emp_id);
+
+mysql> describe emp_details;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| emp_id      | int         | NO   | PRI | NULL    |       |
+| full_name   | varchar(20) | YES  |     | NULL    |       |
+| manager_id  | int         | YES  |     | NULL    |       |
+| joined_date | int         | YES  |     | NULL    |       |
+| city        | varchar(10) | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+
+insert into emp_details(emp_id,full_name,manager_id,joined_date,city)values(105,"jude",5,STR_TO_DATE('15-JUL-2013', '%d-%M-%Y'),"hyderabad");
+
+ select * from emp_details;
++--------+-----------+------------+-------------+------------+
+| emp_id | full_name | manager_id | joined_date | city       |
++--------+-----------+------------+-------------+------------+
+|    101 | johnathan |          1 | 2005-05-24  | chennai    |
+|    102 | stokes    |          2 | 2020-07-15  | banglore   |
+|    103 | alphonso  |          3 | 2011-11-11  | kolkata    |
+|    104 | camavinga |          4 | 2011-03-10  | mumbai     |
+|    105 | jude      |          5 | 2020-07-15  | hyderabad  |
+|    106 | jobe      |          6 | 2013-06-05  | coimbatore |
++--------+-----------+------------+-------------+------------+
+
+ EmployeeSalary:
+
+ create table emp_salary(emp_id int,project_name varchar(20),salary int,foreign key (emp_id) references emp_details (emp_id));
+
+  describe emp_salary;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| emp_id       | int         | YES  | MUL | NULL    |       |
+| project_name | varchar(20) | YES  |     | NULL    |       |
+| salary       | int         | YES  |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+
+select * from emp_salary;
++--------+--------------+--------+
+| emp_id | project_name | salary |
++--------+--------------+--------+
+|    101 | project x    |  50000 |
+|    104 | project k    |  70000 |
+|    103 | project k    |  40000 |
+|    105 | project y    |  40000 |
++--------+--------------+--------+
+
+1) SQL Query to fetch records that are present in one table but not in another table.
+
+ select  s.emp_id, d.full_name,s.project_name  from emp_details d left join  emp_salary s on s.emp_id=d.emp_id;
+
+ +--------+-----------+--------------+
+| emp_id | full_name | project_name |
++--------+-----------+--------------+
+|    101 | johnathan | project x    |
+|   NULL | stokes    | NULL         |
+|    103 | alphonso  | project k    |
+|    104 | camavinga | project k    |
+|    105 | jude      | project y    |
+|   NULL | jobe      | NULL         |
++--------+-----------+--------------+
+6 rows in set (0.00 sec)
+
+
+2)SQL query to fetch all the employees who are not working on any project.
+
+ select   d.full_name,d.joined_date,d.city,s.project_name  from emp_details d left join  emp_salary s on s.emp_id=d.emp_id where project_name is null;
++-----------+-------------+------------+--------------+
+| full_name | joined_date | city       | project_name |
++-----------+-------------+------------+--------------+
+| stokes    | 2020-07-15  | banglore   | NULL         |
+| jobe      | 2013-06-05  | coimbatore | NULL         |
++-----------+-------------+------------+--------------+
+2 rows in set (0.00 sec)
+
+3)SQL query to fetch all the Employees from EmployeeDetails who joined in the Year 2020:
+
+ select * from emp_details where Year(joined_date)="2020";
++--------+-----------+------------+-------------+-----------+
+| emp_id | full_name | manager_id | joined_date | city      |
++--------+-----------+------------+-------------+-----------+
+|    102 | stokes    |          2 | 2020-07-15  | banglore  |
+|    105 | jude      |          5 | 2020-07-15  | hyderabad |
++--------+-----------+------------+-------------+-----------+
+
+Fetch all employees from EmployeeDetails who have a salary record in EmployeeSalary:
+
+select d.emp_id,d.full_name,s.salary from emp_details d join emp_salary s on d.emp_id = s.emp_id;
++--------+-----------+--------+
+| emp_id | full_name | salary |
++--------+-----------+--------+
+|    101 | johnathan |  50000 |
+|    104 | camavinga |  70000 |
+|    103 | alphonso  |  40000 |
+|    105 | jude      |  40000 |
++--------+-----------+--------+
+
+
+Write an SQL query to fetch a project-wise count of employees.
+
+ select project_name,count(emp_id) as project_count from emp_salary group by project_name;
++--------------+---------------+
+| project_name | project_count |
++--------------+---------------+
+| project x    |             1 |
+| project k    |             2 |
+| project y    |             1 |
++--------------+---------------+
+3 rows in set (0.00 sec)
+
+Fetch employee names and salaries even if the salary value is not present for the employee.
+
+select d.full_name ,s.salary from emp_details d left join emp_salary s on d.emp_id = s.emp_id;
++-----------+--------+
+| full_name | salary |
++-----------+--------+
+| johnathan |  50000 |
+| stokes    |   NULL |
+| alphonso  |  40000 |
+| camavinga |  70000 |
+| jude      |  40000 |
+| jobe      |   NULL |
++-----------+--------+
+6 rows in set (0.00 sec)
+
+Write an SQL query to fetch all the Employees who are also managers.
+
+ select d.full_name  from emp_details d join emp_details m on d.emp_id = m.manager_id;
++-----------+
+| full_name |
++-----------+
+| johnathan |
+| stokes    |
+| camavinga |
+| jobe      |
++-----------+
+4 rows in set (0.00 sec)
+
+Write an SQL query to fetch duplicate records from EmployeeDetails.
+
+ select full_name ,count(*) from emp_details group by full_name having count(*)>1;
++-----------+----------+
+| full_name | count(*) |
++-----------+----------+
+| jude      |        2 |
++-----------+----------+
+1 row in set (0.00 sec)
+
+Write an SQL query to fetch only odd rows from the table.
+
+select * from emp_details where mod (emp_id,2)<>0;
++--------+-----------+-------------+-----------+------------+
+| emp_id | full_name | joined_date | city      | manager_id |
++--------+-----------+-------------+-----------+------------+
+|    101 | johnathan | 2005-05-24  | chennai   |        101 |
+|    103 | alphonso  | 2011-11-11  | kolkata   |       NULL |
+|    105 | jude      | 2020-07-15  | hyderabad |       NULL |
+|    107 | jude      | 2013-07-15  | hyderabad |          5 |
++--------+-----------+-------------+-----------+------------+
+
+Write a query to find the 3rd highest salary from a table without top or limit keyword.
+
+ select emp_id,salary from emp_salary where salary=(select max(salary) from emp_salary where salary<(select max(salary) from emp_salary where salary <(select max(salary) from emp_salary)))limit 1;
++--------+--------+
+| emp_id | salary |
++--------+--------+
+|    103 |  40000 |
++--------+--------+
+1 row in set (0.00 sec)
